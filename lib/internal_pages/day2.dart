@@ -29,7 +29,7 @@ class _Day2State extends State<Day2> {
   super.initState();
 }
 void _addExcersize(String name, String description, String sets) {
-    final excersize = ExcersizeContent(name: name, description: description, sets: sets);
+    final excersize = ExcersizeContent(name: name, description: description, sets: sets, initNum: 2);
     widget.workouts.excersizesContent.add(excersize);
     print(widget.workouts.excersizesContent);
     // Save the workout to the box
@@ -62,8 +62,10 @@ late final Box<Workouts> _workoutBox;
 
     setState(() {}); // Refresh the state after initialization
   }
+  
 
   Widget build(BuildContext context) {
+    List<ExcersizeContent> day2Excersizes = widget.workouts.excersizesContent.where((ex) => ex.initNum == 2).toList();
     print(widget.workouts.cycleName[0].name.toString());
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -179,10 +181,10 @@ late final Box<Workouts> _workoutBox;
               
                 
                     
-                      Expanded(child: GridView.builder(itemCount: widget.workouts.excersizesContent.length,
+                      Expanded(child: GridView.builder(itemCount: day2Excersizes.length,
                       gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 1),
                                     itemBuilder: (context, index) {
-                      ExcersizeContent individualExcersize = widget.workouts.excersizesContent[index];
+                      ExcersizeContent individualExcersize = day2Excersizes[index];
                       return ExcersizeItem(excersizeContent: individualExcersize);
                                     }),),
                     

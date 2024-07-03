@@ -4,7 +4,8 @@ class ExcersizeContent{
   final String name;
   final String description;
   final String sets;
-ExcersizeContent({required this.name, required this.description, required this.sets});
+  final int initNum;
+ExcersizeContent({required this.name, required this.description, required this.sets, required this.initNum});
 
 
 @override

@@ -81,7 +81,7 @@ void pressCycle(){
 
    Function(TapDownDetails)? setAllFinal() {
     setState(() {
-        totalWorkouts.add(Workouts(name: MidName, setAmount: MidCycle, cycleName:  nameList, excersizesContent: [ExcersizeContent(name: "place", description: "holder", sets: "1")]));
+        totalWorkouts.add(Workouts(name: MidName, setAmount: MidCycle, cycleName:  nameList, excersizesContent: [ExcersizeContent(name: "place", description: "holder", sets: "1", initNum: 1)]));
        
       
       

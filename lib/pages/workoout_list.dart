@@ -57,6 +57,7 @@ class _ExcersizeListState extends State<ExcersizeList> {
   }
 
 void initState() {
+  _initializeHive();
   
   
 
@@ -154,12 +155,13 @@ void initState() {
 
 
   @override
+
   Future<void> _initializeHive() async {
     // Open the box asynchronously and initialize the database
     _workoutBox = await Hive.openBox<Workouts>('workoutsBox');
-    WorkoutDataBase db = WorkoutDataBase();
+  WorkoutDataBase db = WorkoutDataBase();
     _excersizeBox = await Hive.openBox("excersizeBox");
-      WorkoutDataBase edb = WorkoutDataBase();
+      excersizeDatabase edb = excersizeDatabase();
     if (_workoutBox.get('WORKOUTBOX') == null) {
       db.createInitialData();
     } else {
@@ -174,7 +176,7 @@ void initState() {
     setState(() {}); // Refresh the state after initialization
   }
   
-  
+
    
    build(BuildContext context) {
     Widget printItem() {
