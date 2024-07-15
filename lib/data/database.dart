@@ -10,7 +10,7 @@ class WorkoutDataBase {
   
 
   
-Future<void> initialize() async {
+initialize() async {
   
      _workoutBox = await Hive.box('workoutsBox');
   }
@@ -29,6 +29,7 @@ Future<void> initialize() async {
 
     // Ensure the dynamic list is properly cast to List<Workouts>
     totalWorkouts = storedWorkouts.cast<Workouts>();
+    print("loaded");
   }
   void updateDataBase() {
     _workoutBox.put("WORKOUTBOX", totalWorkouts);

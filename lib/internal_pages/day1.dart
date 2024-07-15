@@ -18,7 +18,7 @@ class Day1 extends StatefulWidget {
 
 class _Day1State extends State<Day1> {
   int index = 0;
-
+  
     
    initState(){
   _initializeHive();
@@ -26,6 +26,7 @@ class _Day1State extends State<Day1> {
 
   super.initState();
 }
+
 void _addExcersize(String name, String description, String sets) {
     var excersize = ExcersizeContent(name: name, description: description, sets: sets, initNum: 1);
     widget.workouts.excersizesContent.add(excersize);
@@ -60,8 +61,18 @@ late final Box<Workouts> _workoutBox;
 
     setState(() {}); // Refresh the state after initialization
   }
+  void _removeExcersize(ExcersizeContent excersize) {
+    setState(() {
+      widget.workouts.excersizesContent.remove(excersize);
+    });
+  }
+   
+    
+  
+
 
   Widget build(BuildContext context) {
+    
     List<ExcersizeContent> day1Excersizes = widget.workouts.excersizesContent.where((ex) => ex.initNum == 1).toList();
     print(widget.workouts.cycleName[0].name.toString());
     return Scaffold(
@@ -73,7 +84,7 @@ late final Box<Workouts> _workoutBox;
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 15.0),
-                child: Text(widget.workouts.cycleName[0].name.toString(), style: TextStyle(fontSize: 35, fontWeight: FontWeight.w900),),
+                child: Text(widget.workouts.cycleName[0].toString(), style: TextStyle(fontSize: 35, fontWeight: FontWeight.w900),),
               ),
               GestureDetector(
                 onTap: () => showDialog(
@@ -165,13 +176,17 @@ late final Box<Workouts> _workoutBox;
                   );},), 
                 
                 
-                 child: Container(
-                  decoration: BoxDecoration(color: Colors.blue.withOpacity(0.5) ,
-                  borderRadius: BorderRadius.circular(12)),
-                  padding: const EdgeInsets.only(top: 20, left: 25, right: 25, bottom: 20),
-                  child: const Center(
-                    child: Icon(Icons.add),
-                  ),)
+                 child: Padding(
+                   padding: const EdgeInsets.symmetric(horizontal: 15.0, ),
+                   child: Container(
+                    
+                    decoration: BoxDecoration(color: Colors.blue.withOpacity(0.5) ,
+                    borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.only(top: 20, left: 25, right: 25, bottom: 20),
+                    child: const Center(
+                      child: Icon(Icons.add),
+                    ),),
+                 )
                   
                 
               ),
@@ -182,7 +197,9 @@ late final Box<Workouts> _workoutBox;
                       gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 1),
                                     itemBuilder: (context, index) {
                       ExcersizeContent individualExcersize = day1Excersizes[index];
-                      return ExcersizeItem(excersizeContent: individualExcersize);
+                      return ExcersizeItem(excersizeContent: individualExcersize,
+                      onRemove: _removeExcersize,
+                      );
                                     }),),
                     
                   

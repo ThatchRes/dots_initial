@@ -32,7 +32,7 @@ class _ExcersizeListState extends State<ExcersizeList> {
   int pageIndex = 0;
   late List<Widget> pageChosen;
   late final Box<Workouts> _workoutBox;
-  late WorkoutDataBase db;
+  late WorkoutDataBase db = WorkoutDataBase();
   late final Box<ExcersizeContent> _excersizeBox;
   late excersizeDatabase edb;
 
@@ -179,6 +179,7 @@ void initState() {
 
    
    build(BuildContext context) {
+    db.loadData();
     Widget printItem() {
     List<Widget> boxes = [];
     for (int i = 0; i < widget.workouts.setAmount; i++) {

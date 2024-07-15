@@ -59,7 +59,11 @@ late final Box<Workouts> _workoutBox;
 
     setState(() {}); // Refresh the state after initialization
   }
-
+void _removeExcersize(ExcersizeContent excersize) {
+    setState(() {
+      widget.workouts.excersizesContent.remove(excersize);
+    });
+  }
   Widget build(BuildContext context) {
     List<ExcersizeContent> day4Excersizes = widget.workouts.excersizesContent.where((ex) => ex.initNum == 4).toList();
     print(widget.workouts.cycleName[0].name.toString());
@@ -181,7 +185,8 @@ late final Box<Workouts> _workoutBox;
                       gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 1),
                                     itemBuilder: (context, index) {
                       ExcersizeContent individualExcersize = day4Excersizes[index];
-                      return ExcersizeItem(excersizeContent: individualExcersize);
+                      return ExcersizeItem(excersizeContent: individualExcersize,
+                      onRemove: _removeExcersize,);
                                     }),),
                     
                   

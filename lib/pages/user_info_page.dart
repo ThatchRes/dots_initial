@@ -6,13 +6,14 @@ import 'package:dots_initial/models/excersizes.dart';
 import 'package:dots_initial/models/excsersizeContent.dart';
 import 'package:dots_initial/models/tootal_workouts.dart';
 import 'package:dots_initial/models/workouts.dart';
-
+import 'dart:convert';
 import 'package:dots_initial/pages/add_workout.dart';
 import 'package:dots_initial/pages/info_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserInfoPage extends StatefulWidget {
   const UserInfoPage({super.key});
@@ -34,6 +35,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
    var MidName = "no name";
    var MidCycle = 0;
    var dayNameCycle = "no name";
+   double sliderValue = 0;
     List<CycleName> nameList = [];
   
   void Function()? setName() {
@@ -50,7 +52,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
   void initState() {
     
 
-  
+  getData();
 
     super.initState();
     _initializeControllers();
@@ -63,9 +65,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
   }
   void Function()? setDayName(int num) {
     setState(() {
-      if (_controllers[num].text == "" || _controllers[num].text == " ") {
-        return;
-      } else
+      
       dayNameCycle = _controllers[num].text;
       nameList.add(CycleName(name: dayNameCycle));
       print(_controllers[num].text);
@@ -75,14 +75,14 @@ class _UserInfoPageState extends State<UserInfoPage> {
     
   }
 
-void pressCycle(){
+ pressCycle(){
   nameEntries();
 }
 
    Function(TapDownDetails)? setAllFinal() {
     setState(() {
         totalWorkouts.add(Workouts(name: MidName, setAmount: MidCycle, cycleName:  nameList, excersizesContent: [ExcersizeContent(name: "place", description: "holder", sets: "1", initNum: 1)]));
-       
+       saveData(totalWorkouts);
       
       
     });
@@ -94,23 +94,55 @@ void pressCycle(){
     for(int i = 0; i < MidCycle; i++){
       setState(() {
         textBoxes.add(
-        SizedBox(width: 55,child: TextField(controller: _controllers[i],),));
-        setDayName(i);
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SizedBox( width: 100,child: Container(decoration: BoxDecoration(color: const Color.fromARGB(255, 174, 225, 249), border: Border.all(color: const Color.fromARGB(255, 174, 225, 249), style: BorderStyle.solid),borderRadius: BorderRadius.circular(8) ),child: Padding(
+            padding: const EdgeInsets.all(3.0),
+            child: TextField(decoration: InputDecoration(border: InputBorder.none,), controller: _controllers[i],),
+          )),),
+        ));
+
       });
       
       
     }
     
-    return (Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: textBoxes,
-    ));
+    return Wrap(
+      alignment: WrapAlignment.center,
+      children: 
+      
+      textBoxes,
+        
+      );
+    
   }
+  Future<void> saveData(List<Workouts> totalWorkouts) async {
+  print('saveData');
+  final prefs = await SharedPreferences.getInstance();
+  List<String> workoutStrings = totalWorkouts.map((workout) => jsonEncode(workout.toJson())).toList();
+  await prefs.setStringList('WorkoutList', workoutStrings);
+}
+Future<List<Workouts>> getData() async {
+  final prefs = await SharedPreferences.getInstance();
+  List<String>? workoutStrings = prefs.getStringList('WorkoutList');
+  
+
+  if (workoutStrings != null) {
+    print('workoutReturned');
+    return workoutStrings.map((workoutString) => Workouts.fromJson(jsonDecode(workoutString))).toList();
+    
+  } else {
+    print('nothingReturned');
+    return [];
+  }
+  
+}
   final WorkoutName = TextEditingController();
   
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
+      
       backgroundColor: Colors.grey[100],
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 50.0, horizontal: 0),
@@ -122,15 +154,22 @@ void pressCycle(){
                 Padding(
                   padding: const EdgeInsets.all( 15.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     
                     children: [
                       Row(
+                        
                         children: [
-                          Text("Name of workout:", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),),
+                          
                           Padding(
                             padding: const EdgeInsets.only(left: 20.0),
-                            child: SizedBox(width: 200, child: TextField(controller: WorkoutName)),
+                            child: SizedBox(width: 300, child: Container( decoration: BoxDecoration(borderRadius: BorderRadius.circular(4), color: Color.fromARGB(255, 238, 238, 238)),
+                              child: Padding(
+                                
+                                padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8),
+                              
+                                child: TextField(decoration: InputDecoration(border: InputBorder.none ,hintText: "Name of Cycle:"),controller: WorkoutName),
+                              ))),
                           ),
                         ],
                       ),
@@ -139,163 +178,62 @@ void pressCycle(){
                     ],
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  
-                  children: [
-                    
-                    Container(
-                      decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-                      width: 55,
-                      height: 35,
-                      
-                      child: FloatingActionButton(
-                        shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(1),
-                      ),
-                        onPressed: () {
-                           pressCycle();
-                         MidCycle = 1;},
-                       
-                       backgroundColor: Colors.grey[300],
-                       child:
-                       Center(child: Text("1", style: TextStyle(color: Colors.grey[600]),)),
-                       
-                       heroTag: "btn1",
-                       elevation: 0,
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-                      width: 55,
-                      height: 35,
-                      
-                      
-                        
-                        child: FloatingActionButton(
-                          shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(1),
-                        ),
-                          onPressed: () {
-                           pressCycle();
-                         MidCycle = 2;},
-                         backgroundColor: Colors.grey[300],
-                         child: Center(child: Text("2", style: TextStyle(color: Colors.grey[600]),)),
-                         heroTag: "btn2",
-                         elevation: 0,
-                        ),
-                      
-                    ),
-                    Container(
-                      decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-                      width: 55,
-                      height: 35,
-                      child: FloatingActionButton(
-                        shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(1),
-                      ),
-                        onPressed: () {
-                           pressCycle();
-                         MidCycle = 3;},
-                       backgroundColor: Colors.grey[300],
-                       child: Center(child: Text("3", style: TextStyle(color: Colors.grey[600]),)),
-                       heroTag: "btn3",
-                       elevation: 0,
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-                      width: 55,
-                      height: 35,
-                      
-                      child: FloatingActionButton(
-                        shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(1),
-                      ),
-                        onPressed: () {
-                           pressCycle();
-                         MidCycle = 4;},
-                       backgroundColor: Colors.grey[300],
-                       child: Center(child: Text("4", style: TextStyle(color: Colors.grey[600]),)),
-                       heroTag: "btn4",
-                       elevation: 0,
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-                      width: 55,
-                      height: 35,
-                      child: FloatingActionButton(
-                        shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(1),
-                      ),
-                        onPressed: () {
-                           pressCycle();
-                         MidCycle = 5;},
-                       backgroundColor: Colors.grey[300],
-                       child: Center(child: Text("5", style: TextStyle(color: Colors.grey[600]),)),
-                       heroTag: "btn5",
-                       elevation: 0,
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-                      width: 55,
-                      height: 35,
-                      child: FloatingActionButton(
-                        shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(1),
-                      ),
-                        onPressed: () {
-                           pressCycle();
-                         MidCycle = 6;},
-                       backgroundColor: Colors.grey[300],
-                       child: Center(child: Text("6", style: TextStyle(color: Colors.grey[600]),)),
-                       heroTag: "btn6",
-                       elevation: 0,
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-                      width: 55,
-                      height: 35,
-                      
-                      child: FloatingActionButton(
-                        
-                        shape: RoundedRectangleBorder(
-                          
-                      borderRadius: BorderRadius.circular(1),
-                      ),
-                        onPressed: () {
-                           pressCycle();
-                         MidCycle = 7;},
-                       backgroundColor: Colors.grey[300],
-                       child: Container(child: Center(child: Text("7", style: TextStyle(color: Colors.grey[600]),))),
-                       heroTag: "btn7",
-                       elevation: 0,
-                       
-                      ),
-                      
-                    ),
-                  ]
-                  
+
+                // slider up to 7 for days in a cycle
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(width: 100, height: 100, decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: Color.fromARGB(255, 238, 238, 238)), child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4.0, bottom: 8, left: 8, right: 8),
+                            child: Text("Days in Cycle:", style: TextStyle(fontSize: 10, fontWeight: FontWeight.w400),),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0, right: 8, top: 8),
+                            child: Text(MidCycle.toString(), style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),),
+                          )
+                        ],
+                      ),),
+                      Slider( 
+                        thumbColor: Colors.black, activeColor: Colors.grey,
+                        value: sliderValue, max: 7, divisions: 7,onChanged: (double value) {
+                        setState(() {
+                          sliderValue = value;
+                          pressCycle();
+                          MidCycle = sliderValue.toInt();
+                        });
+                      } ),
+                    ],
+                  ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  //set list of text entries for the setAmount value. creates name for each cycle day
-                  children: [nameEntries()]
-                ),
+
+
+                
+                  
+                
+                nameEntries()
+                
               ],
               
             ),
 
             GestureDetector(
                   
-                  onTap: () {  
+                  onTap: () { 
+                    for (var i = 0; i < MidCycle; i++) {
+                      setDayName(i);
+                    }
                     setName();
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=> InfoPage()));
-                    setAllFinal();
                     db.updateDataBase;
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> InfoPage()));
+                    saveData(totalWorkouts);
+                    setAllFinal();
+                    
                     print(MidName);
                     print(MidCycle);
                     print(Workouts);

@@ -10,7 +10,7 @@ ExcersizeContent({required this.name, required this.description, required this.s
 
 @override
   String toString() {
-    return '$name: $description';
+    return '$name: $description: $sets: $initNum';
   }
 }
 

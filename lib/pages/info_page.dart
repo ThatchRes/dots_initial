@@ -17,6 +17,7 @@ class InfoPage extends StatefulWidget {
 class _InfoPageState extends State<InfoPage> {
   late final Box<Workouts> _workoutBox;
   late WorkoutDataBase db;
+  
   @override
 
   Future<void> _initializeHive() async {
@@ -37,6 +38,7 @@ void initState(){
    
 
   super.initState();
+  _initializeHive();
 }
 int _selectedIndex = 0;
 void navigateBottomBar(int index){
