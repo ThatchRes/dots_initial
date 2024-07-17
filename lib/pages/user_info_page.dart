@@ -4,7 +4,7 @@ import 'package:dots_initial/data/database.dart';
 import 'package:dots_initial/models/cycleName.dart';
 import 'package:dots_initial/models/excersizes.dart';
 import 'package:dots_initial/models/excsersizeContent.dart';
-import 'package:dots_initial/models/tootal_workouts.dart';
+
 import 'package:dots_initial/models/workouts.dart';
 import 'dart:convert';
 import 'package:dots_initial/pages/add_workout.dart';
@@ -28,7 +28,7 @@ class UserInfoPage extends StatefulWidget {
 class _UserInfoPageState extends State<UserInfoPage> {
   final DayNames = TextEditingController();
   List<TextEditingController> _controllers = [];
-  
+    final _workoutBox = Hive.box<Workouts>('workoutsBox');
     WorkoutDataBase db = WorkoutDataBase();
   
   
@@ -49,14 +49,16 @@ class _UserInfoPageState extends State<UserInfoPage> {
     });
     
   }
-  void initState() {
+  void initState(){
     
-
-  getData();
-
-    super.initState();
-    _initializeControllers();
-  }
+  
+  
+ 
+   
+  super.initState();
+  _initializeControllers();
+}
+   
 
   void _initializeControllers() {
     for (int i = 0; i < 7; i++) {
@@ -81,8 +83,9 @@ class _UserInfoPageState extends State<UserInfoPage> {
 
    Function(TapDownDetails)? setAllFinal() {
     setState(() {
-        totalWorkouts.add(Workouts(name: MidName, setAmount: MidCycle, cycleName:  nameList, excersizesContent: [ExcersizeContent(name: "place", description: "holder", sets: "1", initNum: 1)]));
-       saveData(totalWorkouts);
+      // thid is not adding to totalWorkouts, or is being reset at some point.
+        db.totalWorkouts.add(Workouts(name: MidName, setAmount: MidCycle, cycleName:  nameList, excersizesContent: [ExcersizeContent(name: "place", description: "holder", sets: "1", initNum: 1)]));
+       db.updateDataBase();
       
       
     });
@@ -116,27 +119,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
       );
     
   }
-  Future<void> saveData(List<Workouts> totalWorkouts) async {
-  print('saveData');
-  final prefs = await SharedPreferences.getInstance();
-  List<String> workoutStrings = totalWorkouts.map((workout) => jsonEncode(workout.toJson())).toList();
-  await prefs.setStringList('WorkoutList', workoutStrings);
-}
-Future<List<Workouts>> getData() async {
-  final prefs = await SharedPreferences.getInstance();
-  List<String>? workoutStrings = prefs.getStringList('WorkoutList');
   
-
-  if (workoutStrings != null) {
-    print('workoutReturned');
-    return workoutStrings.map((workoutString) => Workouts.fromJson(jsonDecode(workoutString))).toList();
-    
-  } else {
-    print('nothingReturned');
-    return [];
-  }
-  
-}
   final WorkoutName = TextEditingController();
   
   @override
@@ -225,15 +208,16 @@ Future<List<Workouts>> getData() async {
             GestureDetector(
                   
                   onTap: () { 
+                    // when this is tapped only up to navigator is executed. Set all final doesnt do anyrhing.
                     for (var i = 0; i < MidCycle; i++) {
                       setDayName(i);
                     }
                     setName();
-                    db.updateDataBase;
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=> InfoPage()));
-                    saveData(totalWorkouts);
-                    setAllFinal();
                     
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> InfoPage()));
+                    print("before final Call");
+                    setAllFinal();
+                    print("after final call");
                     print(MidName);
                     print(MidCycle);
                     print(Workouts);

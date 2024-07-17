@@ -21,23 +21,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  Future<void> saveData(List<Workouts> totalWorkouts) async {
-  final prefs = await SharedPreferences.getInstance();
-  List<String> workoutStrings = totalWorkouts.map((workout) => jsonEncode(workout.toJson())).toList();
-  await prefs.setStringList('WorkoutList', workoutStrings);
-}
-Future<List<Workouts>> getData() async {
-  final prefs = await SharedPreferences.getInstance();
-  List<String>? workoutStrings = prefs.getStringList('WorkoutList');
-  
-
-  if (workoutStrings != null) {
-    return workoutStrings.map((workoutString) => Workouts.fromJson(jsonDecode(workoutString))).toList();
-  } else {
-    return [];
-  }
-}
-
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(

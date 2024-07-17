@@ -3,7 +3,7 @@
 import 'package:dots_initial/components/excersize_item.dart';
 import 'package:dots_initial/data/database.dart';
 import 'package:dots_initial/data/workout_data.dart';
-import 'package:dots_initial/data/workout_data_2.dart';
+
 import 'package:dots_initial/models/excersizes.dart';
 import 'package:dots_initial/models/excsersizeContent.dart';
 import 'package:dots_initial/models/workouts.dart';
@@ -45,20 +45,16 @@ late final Box<Workouts> _workoutBox;
   @override
   Future<void> _initializeHive() async {
     // Open the box asynchronously and initialize the database
-    _workoutBox = await Hive.openBox<Workouts>('workoutsBox');
+    _workoutBox = await Hive.box<Workouts>('workoutsBox');
     WorkoutDataBase db = WorkoutDataBase();
-    _excersizeBox = await Hive.openBox("excersizeBox");
-    excersizeDatabase2 edb = excersizeDatabase2();
+    _excersizeBox = await Hive.box("excersizeBox");
+   
     if (_workoutBox.get('workoutsbox') == null) {
       db.createInitialData();
     } else {
       db.loadData();
     }
-    if (_excersizeBox.get('EXCERSIZEBOX2') == null) {
-      edb.createInitialData();
-    } else {
-      edb.loadData();
-    }
+    
 
     setState(() {}); // Refresh the state after initialization
   }

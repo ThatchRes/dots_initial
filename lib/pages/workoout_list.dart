@@ -15,7 +15,7 @@ import 'package:dots_initial/models/excsersizeContent.dart';
 
 import 'package:dots_initial/models/workouts.dart';
 import 'package:dots_initial/pages/info_page.dart';
-import 'package:dots_initial/pages/profile_page.dart';
+
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -31,10 +31,8 @@ class ExcersizeList extends StatefulWidget {
 class _ExcersizeListState extends State<ExcersizeList> {
   int pageIndex = 0;
   late List<Widget> pageChosen;
-  late final Box<Workouts> _workoutBox;
-  late WorkoutDataBase db = WorkoutDataBase();
-  late final Box<ExcersizeContent> _excersizeBox;
-  late excersizeDatabase edb;
+  final _workoutBox = Hive.box<Workouts>('workoutsBox');
+  WorkoutDataBase db = WorkoutDataBase();
 
    
   
@@ -57,8 +55,12 @@ class _ExcersizeListState extends State<ExcersizeList> {
   }
 
 void initState() {
-  _initializeHive();
   
+  if (_workoutBox.get("WORKOUTLIST") == null) {
+      db.createInitialData();
+    } else {
+      db.loadData();
+    }
   
 
   super.initState();
@@ -154,27 +156,13 @@ void initState() {
 }
 
 
+
+  
+  
+
   @override
 
-  Future<void> _initializeHive() async {
-    // Open the box asynchronously and initialize the database
-    _workoutBox = await Hive.openBox<Workouts>('workoutsBox');
-  WorkoutDataBase db = WorkoutDataBase();
-    _excersizeBox = await Hive.openBox("excersizeBox");
-      excersizeDatabase edb = excersizeDatabase();
-    if (_workoutBox.get('WORKOUTBOX') == null) {
-      db.createInitialData();
-    } else {
-      db.loadData();
-    }
-    if (_excersizeBox.get('EXCERSIZEBOX') == null) {
-      edb.createInitialData();
-    } else {
-      edb.loadData();
-    }
-
-    setState(() {}); // Refresh the state after initialization
-  }
+  
   
 
    

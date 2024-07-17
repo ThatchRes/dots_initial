@@ -42,9 +42,9 @@ late final Box<Workouts> _workoutBox;
   @override
   Future<void> _initializeHive() async {
     // Open the box asynchronously and initialize the database
-    _workoutBox = await Hive.openBox<Workouts>('workoutsBox');
+    _workoutBox = await Hive.box<Workouts>('workoutsBox');
     WorkoutDataBase db = WorkoutDataBase();
-    _excersizeBox = await Hive.openBox("excersizeBox");
+    _excersizeBox = await Hive.box("excersizeBox");
     excersizeDatabase edb = excersizeDatabase();
     if (_workoutBox.get('workoutsbox') == null) {
       db.createInitialData();
