@@ -1,6 +1,8 @@
 import 'package:dots_initial/models/excersizes.dart';
 import 'package:dots_initial/models/excsersizeContent.dart';
+import 'package:dots_initial/models/workouts.dart';
 import 'package:flutter/material.dart';
+import 'package:slide_to_act/slide_to_act.dart';
 
 class ExcersizeItem extends StatefulWidget {
   ExcersizeContent excersizeContent;
@@ -12,13 +14,8 @@ class ExcersizeItem extends StatefulWidget {
 }
 
 class _ExcersizeItemState extends State<ExcersizeItem> {
-  String get truncatedName {
-    if (widget.excersizeContent.name.length > 4) {
-      return widget.excersizeContent.name.substring(0, 4) + '-';
-    } else {
-      return widget.excersizeContent.name;
-    }
-  }
+  bool isdone = false;
+  
   @override
   
   
@@ -26,6 +23,7 @@ class _ExcersizeItemState extends State<ExcersizeItem> {
     return 
 
        GestureDetector(
+        
         onLongPress: () {
            showDialog(
             
@@ -46,12 +44,12 @@ class _ExcersizeItemState extends State<ExcersizeItem> {
         },);},
          child: Container(
           
-          margin: EdgeInsets.only(left: 25, bottom: 15,right: 25),
-          width: 170,
+          margin: EdgeInsets.only(left: 10, bottom: 15,right: 10),
+          width: 200,
           
           decoration: BoxDecoration(
           
-          color: Colors.grey[300],
+          color: (isdone == true) ? const Color.fromARGB(255, 128, 173, 130) : Colors.grey[300],
                borderRadius: BorderRadius.circular(8),
                ),
                
@@ -60,27 +58,67 @@ class _ExcersizeItemState extends State<ExcersizeItem> {
              child: Padding(
                padding: const EdgeInsets.all(8.0),
                child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              
-              height: 130,
-              decoration: BoxDecoration(color: Colors.blue),
-            ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              
-              
-              Container(child: Text(truncatedName, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
+                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                 children: [
+                   
+                   
+                   Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                     children: [
+                       Container(child: Text(widget.excersizeContent.name, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 30),
+                               softWrap: true,
+                              overflow: TextOverflow.visible,
+                             ),),
+                     ],
+                   ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Column(
+                          children: [
+                            Text(widget.excersizeContent.sets, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20)),
+                            const Text("sets", style: TextStyle(fontWeight: FontWeight.w400, fontSize: 15),)
+                          ],
+                        ),
+                         Column(
+                          children: [
+                            Text(widget.excersizeContent.description, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20),),
+                            const Text("Reps", style: TextStyle(fontWeight: FontWeight.w400, fontSize: 15),)
+                          ],
+                        )
+                      ],
+                    ),
+                   SlideAction(
+                    
+                    
+                              
+                    borderRadius: 10,
+                    elevation: 0,
+                    innerColor: Colors.white,
+                    outerColor: Colors.grey[100],
+                    text: "",
+                    height: 60,
+                    sliderButtonIconSize: 30,
+                    sliderButtonIcon: (isdone == false) ? Icon(Icons.check): Icon(Icons.cancel_outlined),
+                    onSubmit: () {
+                      //nothing but make it true or false depending
+                      setState(() {
+                        if (isdone == false) {
+                          isdone = true;
+                        } else {
+                          isdone = false;
+                        }
+                        
+                        
+                        
+                      });
                       
-                    ),),
-              Text("Sets: " +widget.excersizeContent.sets, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
-            ],
-          ),
-          
-          ]
-          ),
+                      
+                      
+                    },
+                   )
+                 ],
+               ),
              ),
                
                

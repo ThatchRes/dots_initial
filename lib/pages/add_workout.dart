@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dots_initial/components/workout_item.dart';
 import 'package:dots_initial/data/database.dart';
+import 'package:dots_initial/models/favoriteList.dart';
 
 
 import 'package:dots_initial/models/workouts.dart';
@@ -29,26 +30,38 @@ void CheckTitle(NewTitle) {
 
 
 class _AddWorkoutPageState extends State<AddWorkoutPage> {
-  final _workoutBox = Hive.box<Workouts>('workoutsBox');
+  final _workoutBox = Hive.box<List>('workoutsBox');
   WorkoutDataBase db = WorkoutDataBase();
   
   @override
   void initState(){
-    if (_workoutBox.get("WORKOUTLIST") == null) {
-      db.createInitialData();
-    } else {
+    
       db.loadData();
-    }
+    
   
   
  
    
   super.initState();
 }
+void _update(Workouts workout) {
+    setState(() {
+      db.updateDataBase();
+    });
+  }
   void _removeWorkout(Workouts workout) {
     setState(() {
       db.totalWorkouts.remove(workout);
     });
+  }
+  
+
+  void checkFav() {
+    for (var i = 0; i < db.totalWorkouts.length; i++) {
+      if (db.totalWorkouts[i].isFavorite = true) {
+        addFavorite(db.totalWorkouts[i]);
+      } 
+    }
   }
   
   Widget build(BuildContext context) {
@@ -64,7 +77,7 @@ class _AddWorkoutPageState extends State<AddWorkoutPage> {
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=> UserInfoPage())),
                 
                 child: Container(
-                  decoration: BoxDecoration(color: Colors.blue.withOpacity(0.5) ,
+                  decoration: BoxDecoration(color: Color.fromARGB(255, 174, 91, 122).withOpacity(0.5) ,
                   borderRadius: BorderRadius.circular(12)),
                   padding: const EdgeInsets.only(top: 20, left: 25, right: 25, bottom: 20),
                   child: const Center(
@@ -85,7 +98,12 @@ class _AddWorkoutPageState extends State<AddWorkoutPage> {
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=> ExcersizeList(workouts: individualWorkout,), )),
             child: WorkoutItem(
               workouts: individualWorkout,
-              onRemove: _removeWorkout,),
+              onRemove: _removeWorkout,
+              update: _update,
+              removeFavorite: removeFavorite,
+              addFavorite: addFavorite,
+              check: checkFav,
+              ),
           );},),)
             
           ],

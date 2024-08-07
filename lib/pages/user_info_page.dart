@@ -11,6 +11,7 @@ import 'package:dots_initial/pages/add_workout.dart';
 import 'package:dots_initial/pages/info_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,14 +29,14 @@ class UserInfoPage extends StatefulWidget {
 class _UserInfoPageState extends State<UserInfoPage> {
   final DayNames = TextEditingController();
   List<TextEditingController> _controllers = [];
-    final _workoutBox = Hive.box<Workouts>('workoutsBox');
+    final _workoutBox = Hive.box<List>('workoutsBox');
     WorkoutDataBase db = WorkoutDataBase();
   
   
    var MidName = "no name";
-   var MidCycle = 0;
+   var MidCycle = 1;
    var dayNameCycle = "no name";
-   double sliderValue = 0;
+   double sliderValue = 1;
     List<CycleName> nameList = [];
   
   void Function()? setName() {
@@ -54,7 +55,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
   
   
  
-   
+   db.loadData();
   super.initState();
   _initializeControllers();
 }
@@ -81,16 +82,9 @@ class _UserInfoPageState extends State<UserInfoPage> {
   nameEntries();
 }
 
-   Function(TapDownDetails)? setAllFinal() {
-    setState(() {
-      // thid is not adding to totalWorkouts, or is being reset at some point.
-        db.totalWorkouts.add(Workouts(name: MidName, setAmount: MidCycle, cycleName:  nameList, excersizesContent: [ExcersizeContent(name: "place", description: "holder", sets: "1", initNum: 1)]));
-       db.updateDataBase();
-      
-      
-    });
+  
     
-  }
+  
    Widget nameEntries() {
     print("nameEntry");
     List<Widget> textBoxes = [];
@@ -99,9 +93,23 @@ class _UserInfoPageState extends State<UserInfoPage> {
         textBoxes.add(
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: SizedBox( width: 100,child: Container(decoration: BoxDecoration(color: const Color.fromARGB(255, 174, 225, 249), border: Border.all(color: const Color.fromARGB(255, 174, 225, 249), style: BorderStyle.solid),borderRadius: BorderRadius.circular(8) ),child: Padding(
+          child: SizedBox( height: 75, width: 150,child: Container(decoration: BoxDecoration(color: const Color.fromARGB(255, 197, 140, 161), border: Border.all(color: Color.fromARGB(255, 197, 140, 161), style: BorderStyle.solid),borderRadius: BorderRadius.circular(8) ),child: Padding(
             padding: const EdgeInsets.all(3.0),
-            child: TextField(decoration: InputDecoration(border: InputBorder.none,), controller: _controllers[i],),
+            
+            child: Center(
+              child: TextField(decoration:  InputDecoration(hintText: "Day ${i+1} title" , 
+              hintStyle: const TextStyle(
+              fontFamily: 'Montserrat',
+               fontSize: 20,
+              fontWeight: FontWeight.bold,
+              ),border: InputBorder.none,),
+                style: const TextStyle(
+                fontFamily: 'Montserrat',
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                ),
+               controller: _controllers[i],),
+            ),
           )),),
         ));
 
@@ -109,6 +117,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
       
       
     }
+     
     
     return Wrap(
       alignment: WrapAlignment.center,
@@ -137,21 +146,52 @@ class _UserInfoPageState extends State<UserInfoPage> {
                 Padding(
                   padding: const EdgeInsets.all( 15.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     
                     children: [
                       Row(
-                        
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           
                           Padding(
-                            padding: const EdgeInsets.only(left: 20.0),
-                            child: SizedBox(width: 300, child: Container( decoration: BoxDecoration(borderRadius: BorderRadius.circular(4), color: Color.fromARGB(255, 238, 238, 238)),
+                            padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                            child: SizedBox(height: 100, width: 300, child: Container( decoration: BoxDecoration(borderRadius: BorderRadius.circular(4), ),
                               child: Padding(
                                 
                                 padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8),
                               
-                                child: TextField(decoration: InputDecoration(border: InputBorder.none ,hintText: "Name of Cycle:"),controller: WorkoutName),
+                                child: TextField(
+                                  inputFormatters: [
+                                    
+                                  LengthLimitingTextInputFormatter(12)
+                                  ],
+                                decoration: const InputDecoration(
+                                  hintText: "Name of Cycle:",
+                                  hintStyle: TextStyle(
+                                    fontFamily: 'Montserrat',
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.black, // Color of the bottom line
+                                      width: 3.0, // Thickness of the bottom line
+                                    ),
+                                  ),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.black, // Color of the bottom line when focused
+                                      width: 3.0, // Thickness of the bottom line when focused
+                                    ),
+                                  ),
+                                ),
+                                style: const TextStyle(
+                                  fontFamily: 'Montserrat',
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,),
+                                controller: WorkoutName,
+                              ),
                               ))),
                           ),
                         ],
@@ -163,34 +203,14 @@ class _UserInfoPageState extends State<UserInfoPage> {
                 ),
 
                 // slider up to 7 for days in a cycle
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 6.0),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Container(width: 100, height: 100, decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: Color.fromARGB(255, 238, 238, 238)), child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4.0, bottom: 8, left: 8, right: 8),
-                            child: Text("Days in Cycle:", style: TextStyle(fontSize: 10, fontWeight: FontWeight.w400),),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0, right: 8, top: 8),
-                            child: Text(MidCycle.toString(), style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),),
-                          )
-                        ],
-                      ),),
-                      Slider( 
-                        thumbColor: Colors.black, activeColor: Colors.grey,
-                        value: sliderValue, max: 7, divisions: 7,onChanged: (double value) {
-                        setState(() {
-                          sliderValue = value;
-                          pressCycle();
-                          MidCycle = sliderValue.toInt();
-                        });
-                      } ),
+                      
+                     
                     ],
                   ),
                 ),
@@ -205,37 +225,102 @@ class _UserInfoPageState extends State<UserInfoPage> {
               
             ),
 
-            GestureDetector(
-                  
-                  onTap: () { 
-                    // when this is tapped only up to navigator is executed. Set all final doesnt do anyrhing.
-                    for (var i = 0; i < MidCycle; i++) {
-                      setDayName(i);
-                    }
-                    setName();
-                    
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=> InfoPage()));
-                    print("before final Call");
-                    setAllFinal();
-                    print("after final call");
-                    print(MidName);
-                    print(MidCycle);
-                    print(Workouts);
-                    print(nameList);
-                    
-                  },
-                  
-                  child: Container(
-                    margin: EdgeInsets.all(10),
-                    decoration: BoxDecoration(color: Colors.grey[900],
-                    borderRadius: BorderRadius.circular(12)),
-                    padding: const EdgeInsets.only(top: 20, left: 25, right: 25, bottom: 20),
-                    child: const Center(
-                      //make aarrrow Icon
-                      child: Icon(Icons.send, color: Colors.grey,),
-                      ),
-                    ),
-                  ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16.0),
+                          child: Column(
+                            children: [
+                              
+                              SliderTheme(
+                              data: SliderTheme.of(context).copyWith(
+                                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 15), // Adjust thumb size
+                                overlayShape: const RoundSliderOverlayShape(overlayRadius: 30), // Adjust overlay size
+                                trackHeight: 15, // Adjust track height
+                                activeTrackColor: Colors.grey, // Customize active track color
+                                thumbColor: Colors.black, // Customize thumb color
+                                inactiveTrackColor: const Color.fromARGB(255, 212, 212, 212)
+                              ),
+                              child: Slider(
+                                value: sliderValue,
+                                // fix min value 
+                                min: 1,
+                                max: 7,
+                                divisions: 7,
+                                onChanged: (double value) {
+                                  setState(() {
+                                    sliderValue = value;
+                                    pressCycle();
+                                    MidCycle = sliderValue.toInt();
+                                  });
+                                },
+                              ),
+                            ),
+                          Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4.0, bottom: 8, left: 8, right: 8),
+                              child: Text(MidCycle.toString() + " Days in Cycle", style: const TextStyle(fontFamily: 'Montserrat', fontSize: 25, fontWeight: FontWeight.bold),),
+                            ),
+                            
+                          ],
+                                                ),
+                            ],
+                          ),
+                        ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: GestureDetector(
+                        
+                        onTap: () async {  try {
+                          // when this is tapped only up to navigator is executed. Set all final doesnt do anyrhing.
+                          for (var i = 0; i < MidCycle; i++) {
+                            setDayName(i);
+                          }
+                          setName();
+                          
+                          
+                          print("before final Call");
+                           Workouts workout = Workouts(
+                              name: MidName, 
+                              setAmount: MidCycle, 
+                              cycleName: nameList, 
+                              //isFavorite: false,
+                              excersizesContent: []
+                            );
+                            // thid is not adding to totalWorkouts, or is being reset at some point.
+                             db.totalWorkouts.add(workout);
+                              db.updateDataBase();
+                            
+                            //total Workouts contains the correct things but it is either not transfering updating or there is an issue on the viewpage
+                          print(db.totalWorkouts);
+                          print("after final call");
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> const InfoPage()));
+                          
+                        } catch (e) {
+                          // Log any errors that occur
+                          print("An error occurred: $e");
+                        }
+                        },
+                        
+                        child: Container(
+                          
+                          width: 100,
+                          height: 100,
+                          margin: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(color: Colors.grey[900],
+                          borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.only(top: 20, left: 25, right: 25, bottom: 20),
+                          child: const Center(
+                            //make aarrrow Icon
+                            child: Icon(Icons.send, color: Colors.grey, size: 40,),
+                            ),
+                          ),
+                        ),
+                ),
+              ],
+            ),
                 
                 
           ],

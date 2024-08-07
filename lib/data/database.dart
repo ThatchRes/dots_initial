@@ -6,20 +6,30 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 class WorkoutDataBase {
 List<Workouts> totalWorkouts = [];
+
   
-  
-  final _workoutBox = Hive.box<Workouts>('workoutsBox');
+  final _workoutBox = Hive.box<List>('workoutsBox');
   
   void createInitialData(){
+    print("init created");
     totalWorkouts = [];
+    updateDataBase();
   }
   void loadData() {
-    totalWorkouts = _workoutBox.get('WORKOUTBOX') as List<Workouts>;
+    var storedWorkouts = _workoutBox.get('WORKOUTBOX');
+    print('Stored workouts: $storedWorkouts');
+    if (storedWorkouts != null) {
+       totalWorkouts = List<Workouts>.from(storedWorkouts.map((workout) => workout as Workouts));
+      print('Loaded workouts from box: $totalWorkouts');
+    } else {
+      print('Creating initial data');
+      createInitialData();
+    }
   }
+  
 
 
-
-  void updateDataBase() {
-    _workoutBox.put("WORKOUTBOX", totalWorkouts as Workouts);
+   void updateDataBase() {
+    _workoutBox.put("WORKOUTBOX", totalWorkouts);
   }
 }

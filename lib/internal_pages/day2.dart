@@ -1,17 +1,16 @@
 
-
 import 'package:dots_initial/components/excersize_item.dart';
 import 'package:dots_initial/data/database.dart';
 import 'package:dots_initial/data/workout_data.dart';
-
 import 'package:dots_initial/models/excersizes.dart';
 import 'package:dots_initial/models/excsersizeContent.dart';
 import 'package:dots_initial/models/workouts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class Day2 extends StatefulWidget {
-  final Workouts workouts;
+   Workouts workouts;
    Day2({super.key,required this.workouts});
 
   @override
@@ -20,51 +19,55 @@ class Day2 extends StatefulWidget {
 
 class _Day2State extends State<Day2> {
   int index = 0;
-
+  
     
    initState(){
   _initializeHive();
   
-
+  db.loadData();
   super.initState();
 }
+
 void _addExcersize(String name, String description, String sets) {
-    final excersize = ExcersizeContent(name: name, description: description, sets: sets, initNum: 2);
+    var excersize = ExcersizeContent(name: name, description: description, sets: sets, initNum: 3);
     widget.workouts.excersizesContent.add(excersize);
     print(widget.workouts.excersizesContent);
     // Save the workout to the box
-    print(_excersizeBox);
     
-    setState(() {});
+    
+    setState(() {
+      db.updateDataBase();
+    });
   }
-late final Box<Workouts> _workoutBox;
+  final _workoutBox =  Hive.box<List>('workoutsBox');
+    WorkoutDataBase db = WorkoutDataBase();
   
   
-  late final Box<ExcersizeContent> _excersizeBox;
+
   
   @override
   Future<void> _initializeHive() async {
-    // Open the box asynchronously and initialize the database
-    _workoutBox = await Hive.box<Workouts>('workoutsBox');
-    WorkoutDataBase db = WorkoutDataBase();
-    _excersizeBox = await Hive.box("excersizeBox");
-   
-    if (_workoutBox.get('workoutsbox') == null) {
-      db.createInitialData();
-    } else {
-      db.loadData();
-    }
+    
+    
     
 
-    setState(() {}); // Refresh the state after initialization
+    setState(() {
+      
+    }); // Refresh the state after initialization
   }
-  
   void _removeExcersize(ExcersizeContent excersize) {
     setState(() {
       widget.workouts.excersizesContent.remove(excersize);
+      db.updateDataBase();
     });
   }
+   
+    
+  
+
+
   Widget build(BuildContext context) {
+    
     List<ExcersizeContent> day2Excersizes = widget.workouts.excersizesContent.where((ex) => ex.initNum == 2).toList();
     print(widget.workouts.cycleName[0].name.toString());
     return Scaffold(
@@ -74,10 +77,14 @@ late final Box<Workouts> _workoutBox;
           Column(
             
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0),
-                child: Text(widget.workouts.cycleName[0].name.toString(), style: TextStyle(fontSize: 35, fontWeight: FontWeight.w900),),
-              ),
+              Expanded(child: GridView.builder(itemCount: day2Excersizes.length,
+                      gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: .8),
+                                    itemBuilder: (context, index) {
+                      ExcersizeContent individualExcersize = day2Excersizes[index];
+                      return ExcersizeItem(excersizeContent: individualExcersize,
+                      onRemove: _removeExcersize,
+                      );
+                                    }),),
               GestureDetector(
                 onTap: () => showDialog(
                   context: context, builder: (BuildContext context) {
@@ -96,11 +103,35 @@ late final Box<Workouts> _workoutBox;
                       children: [TextField(
                       controller: _nameEditor,
                       decoration: InputDecoration(hintText: "Workout Name"),
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(12)
+                      ],
                     ),
                     TextField(
                       controller: _setEditor,
                       decoration: InputDecoration(hintText: "Set Amount"),
+                      keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(2),
+                    ],
                     ),
+                    
+                              TextField(
+                              
+                              controller: _descriptionEditor,
+                              decoration: const InputDecoration(
+                                hintText: "Reps per set",
+                                
+                                
+                              ),
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(2),
+                              ],
+                              
+                              ),
                     Padding(
                       
                       padding: const EdgeInsets.only(top: 10.0),
@@ -145,9 +176,11 @@ late final Box<Workouts> _workoutBox;
                               _descriptionEditor.text,
                               _setEditor.text,
                     );
+                    
                     Navigator.pop(context);
                   });
                   
+
                   },
                   
                   child: Container(
@@ -168,27 +201,24 @@ late final Box<Workouts> _workoutBox;
                   );},), 
                 
                 
-                 child: Container(
-                  decoration: BoxDecoration(color: Colors.blue.withOpacity(0.5) ,
-                  borderRadius: BorderRadius.circular(12)),
-                  padding: const EdgeInsets.only(top: 20, left: 25, right: 25, bottom: 20),
-                  child: const Center(
-                    child: Icon(Icons.add),
-                  ),)
+                 child: Padding(
+                   padding: const EdgeInsets.symmetric(horizontal: 15.0, ),
+                   child: Container(
+                    
+                    decoration: BoxDecoration(color: Color.fromARGB(255, 174, 91, 122).withOpacity(0.5) ,
+                    borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.only(top: 20, left: 25, right: 25, bottom: 20),
+                    child: const Center(
+                      child: Icon(Icons.add),
+                    ),),
+                 )
                   
                 
               ),
               
                 
                     
-                      Expanded(child: GridView.builder(itemCount: day2Excersizes.length,
-                      gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 1),
-                                    itemBuilder: (context, index) {
-                      ExcersizeContent individualExcersize = day2Excersizes[index];
-                      return ExcersizeItem(excersizeContent: individualExcersize
-                      ,
-                      onRemove: _removeExcersize,);
-                                    }),),
+                      
                     
                   
                 

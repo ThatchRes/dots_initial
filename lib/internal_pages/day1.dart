@@ -6,10 +6,11 @@ import 'package:dots_initial/models/excersizes.dart';
 import 'package:dots_initial/models/excsersizeContent.dart';
 import 'package:dots_initial/models/workouts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class Day1 extends StatefulWidget {
-  final Workouts workouts;
+   Workouts workouts;
    Day1({super.key,required this.workouts});
 
   @override
@@ -19,11 +20,12 @@ class Day1 extends StatefulWidget {
 class _Day1State extends State<Day1> {
   int index = 0;
   
+  
     
    initState(){
   _initializeHive();
   
-
+  db.loadData();
   super.initState();
 }
 
@@ -32,38 +34,32 @@ void _addExcersize(String name, String description, String sets) {
     widget.workouts.excersizesContent.add(excersize);
     print(widget.workouts.excersizesContent);
     // Save the workout to the box
-    print(_excersizeBox);
     
-    setState(() {});
+    
+    setState(() {
+      db.updateDataBase();
+    });
   }
-late final Box<Workouts> _workoutBox;
+  final _workoutBox =  Hive.box<List>('workoutsBox');
+    WorkoutDataBase db = WorkoutDataBase();
   
   
-  late final Box<ExcersizeContent> _excersizeBox;
+
   
   @override
   Future<void> _initializeHive() async {
-    // Open the box asynchronously and initialize the database
-    _workoutBox = await Hive.box<Workouts>('workoutsBox');
-    WorkoutDataBase db = WorkoutDataBase();
-    _excersizeBox = await Hive.box("excersizeBox");
-    excersizeDatabase edb = excersizeDatabase();
-    if (_workoutBox.get('workoutsbox') == null) {
-      db.createInitialData();
-    } else {
-      db.loadData();
-    }
-    if (_excersizeBox.get('EXCERSIZEBOX') == null) {
-      edb.createInitialData();
-    } else {
-      edb.loadData();
-    }
+    
+    
+    
 
-    setState(() {}); // Refresh the state after initialization
+    setState(() {
+      
+    }); // Refresh the state after initialization
   }
   void _removeExcersize(ExcersizeContent excersize) {
     setState(() {
       widget.workouts.excersizesContent.remove(excersize);
+      db.updateDataBase();
     });
   }
    
@@ -80,12 +76,16 @@ late final Box<Workouts> _workoutBox;
       body: 
         
           Column(
-            
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0),
-                child: Text(widget.workouts.cycleName[0].toString(), style: TextStyle(fontSize: 35, fontWeight: FontWeight.w900),),
-              ),
+                Expanded(child: GridView.builder(itemCount: day1Excersizes.length,
+                      gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: .8),
+                                    itemBuilder: (context, index) {
+                      ExcersizeContent individualExcersize = day1Excersizes[index];
+                      return ExcersizeItem(excersizeContent: individualExcersize,
+                      onRemove: _removeExcersize,
+                      );
+                                    }),),
               GestureDetector(
                 onTap: () => showDialog(
                   context: context, builder: (BuildContext context) {
@@ -104,46 +104,40 @@ late final Box<Workouts> _workoutBox;
                       children: [TextField(
                       controller: _nameEditor,
                       decoration: InputDecoration(hintText: "Workout Name"),
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(12)
+                      ],
                     ),
                     TextField(
                       controller: _setEditor,
                       decoration: InputDecoration(hintText: "Set Amount"),
+                      keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(2),
+                    ],
                     ),
-                    Padding(
-                      
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: Container(
-                        
-                        height: 200,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey,),
-                          borderRadius: BorderRadius.circular(6),
-                          color: Colors.grey[100]
-                        ),
-                        
-                        child: Padding(
-                          
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
-                          child: Column(
-                            
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              
+                    
                               TextField(
                               
                               controller: _descriptionEditor,
-                              decoration: InputDecoration(
-                                hintText: "Description",
-                                border: InputBorder.none,
+                              decoration: const InputDecoration(
+                                hintText: "Reps per set",
+                                
+                                
                               ),
-                              keyboardType: TextInputType.multiline,
-                              textInputAction: TextInputAction.newline,
-                              maxLines: null,),
-                            ],
-                          ),
-                        )
-                      ),
-                    ),
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(2),
+                              ],
+                              
+                              ),
+                            
+                          
+                        
+                      
+                    
                     GestureDetector(
                   
                   onTap: () {  
@@ -153,9 +147,11 @@ late final Box<Workouts> _workoutBox;
                               _descriptionEditor.text,
                               _setEditor.text,
                     );
+                    
                     Navigator.pop(context);
                   });
                   
+
                   },
                   
                   child: Container(
@@ -177,10 +173,10 @@ late final Box<Workouts> _workoutBox;
                 
                 
                  child: Padding(
-                   padding: const EdgeInsets.symmetric(horizontal: 15.0, ),
+                   padding: const EdgeInsets.only(left: 15.0, right: 15, bottom: 20 ),
                    child: Container(
                     
-                    decoration: BoxDecoration(color: Colors.blue.withOpacity(0.5) ,
+                    decoration: BoxDecoration(color: Color.fromARGB(255, 174, 91, 122).withOpacity(0.5) ,
                     borderRadius: BorderRadius.circular(12)),
                     padding: const EdgeInsets.only(top: 20, left: 25, right: 25, bottom: 20),
                     child: const Center(
@@ -193,14 +189,7 @@ late final Box<Workouts> _workoutBox;
               
                 
                     
-                      Expanded(child: GridView.builder(itemCount: day1Excersizes.length,
-                      gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 1),
-                                    itemBuilder: (context, index) {
-                      ExcersizeContent individualExcersize = day1Excersizes[index];
-                      return ExcersizeItem(excersizeContent: individualExcersize,
-                      onRemove: _removeExcersize,
-                      );
-                                    }),),
+                    
                     
                   
                 

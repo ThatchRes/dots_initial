@@ -11,8 +11,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
 
   await Hive.initFlutter();
+  Hive.registerAdapter(WorkoutsAdapter());
+  Hive.registerAdapter(CycleNameAdapter());
+  Hive.registerAdapter(ExcersizeContentAdapter());
 
-  var box = await Hive.openBox<Workouts>('workoutsBox');
+  var box = await Hive.openBox<List>('workoutsBox');
   print(box);
  
 
@@ -22,6 +25,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
+  
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,

@@ -1,5 +1,6 @@
 import 'package:dots_initial/models/excersizes.dart';
 import 'package:dots_initial/models/excsersizeContent.dart';
+import 'package:dots_initial/models/workouts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 

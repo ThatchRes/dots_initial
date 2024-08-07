@@ -14,17 +14,18 @@ class InfoPage extends StatefulWidget {
 }
 
 class _InfoPageState extends State<InfoPage> {
-  
+double _opacity = 0.0;
+
   @override
-
-  
-  
-void initState(){
-   
-
-  super.initState();
-  
-}
+  void initState() {
+    super.initState();
+    // Start the fade-in effect
+    Future.delayed(const Duration(milliseconds: 100), () {
+      setState(() {
+        _opacity = 1.0;
+      });
+    });
+  }
 int _selectedIndex = 0;
 void navigateBottomBar(int index){
   setState(() {
@@ -45,17 +46,23 @@ final List<Widget> _pages = [
         onTabChange: (index) => navigateBottomBar(index),
       ),
       appBar:  AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         
-        title: Text("DoTS", style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),),
+        title: new Image.asset(
+              'images/logo.png',
+              fit: BoxFit.cover,
+              width: 50,
+            ),
         
       ),
       
-      drawer: Drawer(
-        backgroundColor: Colors.grey[500],
-        ),
-        body: _pages[_selectedIndex],
-    );
+      
+        body: AnimatedOpacity(
+        opacity: _opacity,
+        duration: const Duration(seconds: 1),
+        child: _pages[_selectedIndex],
+    ));
     
   }
 }

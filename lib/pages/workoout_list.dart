@@ -31,7 +31,7 @@ class ExcersizeList extends StatefulWidget {
 class _ExcersizeListState extends State<ExcersizeList> {
   int pageIndex = 0;
   late List<Widget> pageChosen;
-  final _workoutBox = Hive.box<Workouts>('workoutsBox');
+  final _workoutBox = Hive.box<List>('workoutsBox');
   WorkoutDataBase db = WorkoutDataBase();
 
    
@@ -43,7 +43,7 @@ class _ExcersizeListState extends State<ExcersizeList> {
   
  
 
-  void setPage(int num){
+   void setPage(int num){
     setState(() {
       print("pagenum is" + num.toString());
       pageIndex = num ;
@@ -56,11 +56,9 @@ class _ExcersizeListState extends State<ExcersizeList> {
 
 void initState() {
   
-  if (_workoutBox.get("WORKOUTLIST") == null) {
-      db.createInitialData();
-    } else {
+  
       db.loadData();
-    }
+    
   
 
   super.initState();
@@ -69,6 +67,8 @@ void initState() {
   List<CycleName> cycleNames = widget.workouts.cycleName;
   List<ExcersizeContent> excersizes = widget.workouts.excersizesContent;
   String workoutName = widget.workouts.name;
+  
+  //bool isFavorite = widget.workouts.isFavorite;
   
 
   pageChosen = [];
@@ -83,6 +83,8 @@ void initState() {
               setAmount: setAmount,
               cycleName: [cycleNames[i]],
               excersizesContent: excersizes,
+              
+              //isFavorite: isFavorite,
             ),
           ));
           
@@ -93,6 +95,7 @@ void initState() {
               setAmount: setAmount,
               cycleName: [cycleNames[i]],
               excersizesContent: excersizes,
+              //isFavorite: isFavorite,
             ),
           ));
           
@@ -103,6 +106,7 @@ void initState() {
               setAmount: setAmount,
               cycleName: [cycleNames[i]],
               excersizesContent: excersizes,
+              //isFavorite: isFavorite,
             ),
           ));
           
@@ -113,6 +117,7 @@ void initState() {
               setAmount: setAmount,
               cycleName: [cycleNames[i]],
               excersizesContent: excersizes,
+              //isFavorite: isFavorite,
             ),
           ));
           
@@ -123,6 +128,7 @@ void initState() {
               setAmount: setAmount,
               cycleName: [cycleNames[i]],
               excersizesContent: excersizes,
+              //isFavorite: isFavorite,
             ),
           ));
           break;
@@ -133,6 +139,7 @@ void initState() {
               setAmount: setAmount,
               cycleName: [cycleNames[i]],
               excersizesContent: excersizes,
+              //isFavorite: isFavorite,
             ),
           ));
           
@@ -143,6 +150,7 @@ void initState() {
               setAmount: setAmount,
               cycleName: [cycleNames[i]],
               excersizesContent: excersizes,
+              //isFavorite: isFavorite,
             ),
           ));
           
@@ -184,14 +192,14 @@ void initState() {
                 height: 35,
                 
                 child: FloatingActionButton(
-                  hoverColor: Colors.grey[400],
+                  hoverColor: Color.fromARGB(255, 197, 140, 161),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(1),
                     
                   ),
                   onPressed: () => setPage(i),
-                  backgroundColor: Colors.grey[300],
-                  child: Text("Day: " + displayNum.toString(), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey[600]),),
+                  backgroundColor: Color.fromARGB(255, 197, 140, 161),
+                  child: Text("Day: " + displayNum.toString(), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),
                   heroTag: i,
                   elevation: 0,
                   
@@ -223,7 +231,8 @@ void initState() {
                 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       
@@ -235,7 +244,8 @@ void initState() {
                           
                         )
                         ),
-                      Title(color: Colors.black, child: Text(widget.workouts.name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold), )),
+                      Title(color: Colors.black, child: Text(widget.workouts.cycleName[pageIndex].toString(), style: TextStyle(fontSize: 45, fontWeight: FontWeight.w700))),
+                      Title(color: Colors.black, child: Text(widget.workouts.name, style: TextStyle(fontSize: 35, fontWeight: FontWeight.w500), )),
                       
                        Container(
                           decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: Colors.transparent,),
