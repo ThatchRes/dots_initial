@@ -32,6 +32,7 @@ class _WorkoutItemState extends State<WorkoutItem> {
   void initState() {
     // TODO: implement initState
     state = widget.workouts.isFavorite;
+    
     super.initState();
   }
  void _toggleFavorite() {

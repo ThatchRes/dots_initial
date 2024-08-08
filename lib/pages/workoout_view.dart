@@ -93,10 +93,12 @@ class _WorkoutViewState extends State<WorkoutView> {
  
   void checkFav() {
     for (var i = 0; i < db.totalWorkouts.length; i++) {
-      if (db.totalWorkouts[i].isFavorite = true) {
+      if (db.totalWorkouts[i].isFavorite == true) {
         addFavorite(db.totalWorkouts[i]);
       } else {
         print("didnt execute");
+        removeFavorite(db.totalWorkouts[i]);
+        
       }
     }
   }
