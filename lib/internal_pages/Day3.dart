@@ -75,9 +75,9 @@ void _addExcersize(String name, String description, String sets) {
       body: 
         
           Column(
-            
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(child: GridView.builder(itemCount: day3Excersizes.length,
+                Expanded(child: GridView.builder(itemCount: day3Excersizes.length,
                       gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: .8),
                                     itemBuilder: (context, index) {
                       ExcersizeContent individualExcersize = day3Excersizes[index];
@@ -132,41 +132,11 @@ void _addExcersize(String name, String description, String sets) {
                               ],
                               
                               ),
-                    Padding(
-                      
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: Container(
-                        
-                        height: 200,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey,),
-                          borderRadius: BorderRadius.circular(6),
-                          color: Colors.grey[100]
-                        ),
-                        
-                        child: Padding(
-                          
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
-                          child: Column(
                             
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              
-                              TextField(
-                              
-                              controller: _descriptionEditor,
-                              decoration: InputDecoration(
-                                hintText: "Description",
-                                border: InputBorder.none,
-                              ),
-                              keyboardType: TextInputType.multiline,
-                              textInputAction: TextInputAction.newline,
-                              maxLines: null,),
-                            ],
-                          ),
-                        )
-                      ),
-                    ),
+                          
+                        
+                      
+                    
                     GestureDetector(
                   
                   onTap: () {  
@@ -202,7 +172,7 @@ void _addExcersize(String name, String description, String sets) {
                 
                 
                  child: Padding(
-                   padding: const EdgeInsets.symmetric(horizontal: 15.0, ),
+                   padding: const EdgeInsets.only(left: 15.0, right: 15, bottom: 20 ),
                    child: Container(
                     
                     decoration: BoxDecoration(color: Color.fromARGB(255, 174, 91, 122).withOpacity(0.5) ,
@@ -217,6 +187,7 @@ void _addExcersize(String name, String description, String sets) {
               ),
               
                 
+                    
                     
                     
                   
